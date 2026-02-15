@@ -1,6 +1,6 @@
 # Project Automation Login Page OrangeHRM - Quiz 3
 
-#Catatan:
+## Catatan:
 Untuk folder "node_modules" sengaja saya masukkan ke .gitignore mas karena ukuran yang terlalu besar.
 
 ## Cara Menjalankan Project:
