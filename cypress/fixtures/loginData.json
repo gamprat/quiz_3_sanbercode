@@ -1,0 +1,10 @@
+{
+    "validUser": "Admin",
+    "validPass": "admin123",
+    "invalidUser": "Admin1",
+    "invalidPass": "admin1234",
+    "specialCharUser": "<()***#>",
+    "specialCharPass": "%#%",
+    "htmlInjectUser": "<h1>user</h1>",
+    "htmlInjectPass": "<h1>user</h1>"
+}
