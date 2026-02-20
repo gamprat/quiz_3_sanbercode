@@ -1,40 +1,24 @@
-describe("Tugas 18 - Reqres.in API Automation", () => {
-  const baseUrl = "https://reqres.in/api";
+describe("Tugas 18 - Platzi Fake API Automation", () => {
+  const baseUrl = "https://api.escuelajs.co/api";
   const apiHeaders = {
-    "x-api-key": "YOUR_API_KEY_HERE",
     "Content-type": "application/json",
   };
 
   // Auth
-  it("POST - Register Successful", () => {
-    cy.request({
-      method: "POST",
-      url: `${baseUrl}/register`,
-      headers: apiHeaders,
-      body: {
-        email: "eve.holt@reqres.in",
-        password: "pistol",
-      },
-      failedOnStatusCode: false,
-    }).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body).to.have.property("token");
-    });
-  });
-
   it("POST - Login Successful", () => {
     cy.request({
       method: "POST",
-      url: `${baseUrl}/login`,
-      headers: apiHeaders,
+      url: `${baseUrl}/v1/auth/login`,
+      headers: apiHeaders, 
       body: {
-        email: "eve.holt@reqres.in",
-        password: "cityslicka",
+        "email": "john@mail.com",
+        "password": "changeme"
       },
       failedOnStatusCode: false,
     }).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body).to.have.property("token");
+      expect(response.status).to.eq(201);
+      expect(response.body).to.have.property("access_token");
+      expect(response.body).to.have.property("refresh_token");
     });
   });
 
@@ -42,107 +26,163 @@ describe("Tugas 18 - Reqres.in API Automation", () => {
   it("GET - List Users", () => {
     cy.request({
       method: "GET",
-      url: `${baseUrl}/users`,
+      url: `${baseUrl}/v1/users`,
       headers: apiHeaders,
       failedOnStatusCode: false,
     }).then((response) => {
       expect(response.status).to.eq(200);
+      expect(response.body).to.be.an("array");
+      expect(response.body.length).to.be.greaterThan(0);
       expect(response.body).to.not.be.null;
-      expect(response.body).to.have.property("data");
-    });
-  });
-
-  it("GET - List Users Page 2", () => {
-    cy.request({
-      method: "GET",
-      url: `${baseUrl}/users?page=2`,
-      headers: apiHeaders,
-      failedOnStatusCode: false,
-    }).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body).to.not.be.null;
-      expect(response.body).to.have.property("data");
     });
   });
 
   it("GET - Single User", () => {
     cy.request({
       method: "GET",
-      url: `${baseUrl}/users/2`,
+      url: `${baseUrl}/v1/users/1`,
       headers: apiHeaders,
       failedOnStatusCode: false,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.data.id).to.eq(2);
+      expect(response.body.id).to.eq(1);
+      expect(response.body).to.have.property("email");
+      expect(response.body).to.have.property("role");
     });
   });
 
   it("POST - Create User", () => {
     cy.request({
       method: "POST",
-      url: `${baseUrl}/users`,
+      url: `${baseUrl}/v1/users/`,
       headers: apiHeaders,
       body: {
-        name: "User Testing",
-        job: "QA Engineer",
+        name: "Nicolas",
+        email: "nico@gmail.com",
+        password: "1234",
+        avatar: "https://picsum.photos/800",
       },
       failedOnStatusCode: false,
     }).then((response) => {
       expect(response.status).to.eq(201);
-      expect(response.body.name).to.eq("User Testing");
+      expect(response.body.name).to.eq("Nicolas");
     });
   });
 
-  it("PATCH - Update User", () => {
-    cy.request({
-      method: "PATCH",
-      url: `${baseUrl}/users/2`,
-      headers: apiHeaders,
-      body: {
-        job: "Junior QA Engineer",
-      },
-      failedOnStatusCode: false,
-    }).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body.job).to.eq("Junior QA Engineer");
-    });
-  });
-
-  it("DELETE - Delete User", () => {
-    cy.request({
-      method: "DELETE",
-      url: `${baseUrl}/users/2`,
-      headers: apiHeaders,
-      failedOnStatusCode: false,
-    }).then((response) => {
-      expect(response.status).to.eq(204);
-    });
-  });
-
-  // Resources
-  it("GET - List Resources", () => {
+  // Categories
+  it("GET - List Categories", () => {
     cy.request({
       method: "GET",
-      url: `${baseUrl}/unknown`,
+      url: `${baseUrl}/v1/categories`,
       headers: apiHeaders,
       failedOnStatusCode: false,
     }).then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body).to.not.be.null;
-      expect(response.body).to.have.property("data");
+      expect(response.body).to.be.an("array");
+      expect(response.body[0]).to.have.property("image");
     });
   });
 
-  it("GET - Single Resource", () => {
+  it("GET - Single Category", () => {
     cy.request({
       method: "GET",
-      url: `${baseUrl}/unknown/2`,
+      url: `${baseUrl}/v1/categories/1`,
       headers: apiHeaders,
       failedOnStatusCode: false,
     }).then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body).to.not.be.null;
-      expect(response.body).to.have.property("data");
     });
   });
+
+  // Products
+  it("GET - List Products", () => {
+    cy.request({
+      method: "GET",
+      url: `${baseUrl}/v1/products`,
+      headers: apiHeaders,
+      failedOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.not.be.null;
+      expect(response.body).to.be.an("array");
+      expect(response.body[0].price).to.be.a("number");
+    });
+  });
+
+  it("GET - Single Product", () => {
+    cy.request({
+      method: "GET",
+      url: `${baseUrl}/v1/products/3`,
+      headers: apiHeaders,
+      failedOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.not.be.null;
+    });
+  });
+
+  it("GET - Related Products", () => {
+    cy.request({
+      method: "GET",
+      url: `${baseUrl}/v1/products/3/related`,
+      headers: apiHeaders,
+      failedOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.not.be.null;
+      expect(response.body).to.be.an("array");
+    });
+  });
+
+  it("GET - Filter Product by Price", () => {
+    cy.request({
+      method: "GET",
+      url: `${baseUrl}/v1/products/?price=100`,
+      headers: apiHeaders,
+      failedOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.not.be.null;
+      expect(response.body).to.be.an("array");
+    });
+  });
+
+  //Locations
+  it("GET - List Locations", () => {
+    cy.request({
+      method: "GET",
+      url: `${baseUrl}/v1/locations`,
+      headers: apiHeaders,
+      failOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.be.an("array");
+      if (response.body.length > 0) {
+        expect(response.body[0]).to.have.property("id");
+        expect(response.body[0]).to.have.property("name");
+      }
+    });
+  });
+
+  it("GET - List Locations with Limit", () => {
+    const limit = 10;
+    cy.request({
+      method: "GET",
+      url: `${baseUrl}/v1/locations`,
+      qs: { size: limit },
+      headers: apiHeaders,
+      failOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.be.an("array");
+      if (response.body.length > 0) {
+        expect(response.body[0]).to.have.property("id");
+        expect(response.body[0]).to.have.property("name");
+        expect(response.body).to.be.an("array");
+        expect(response.body.length).to.be.at.most(limit);
+      }
+    });
+  });  
 });
